@@ -30,16 +30,23 @@ pipeline {
         }
       }
     }
-stage('Build & Push Docker Image') {
-  steps {
-    script {
-      docker.withRegistry('', 'dockerhub-credentials-id') {
-        def img = docker.build("${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}", 'frontend/')
-        img.push()
-      }
-    }
-  }
-}
+   stage('Build & Push Docker Image') {
+     steps {
+       script {
+         docker.withRegistry('', 'dockerhub-credentials-id') {
+
++          // use '-f' to point at the root-level Dockerfile,
++          // and context is the 'frontend' dir
++          def img = docker.build(
++            "${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}",
++            "-f ./Dockerfile ./frontend"
++          )
+           img.push()
+         }
+       }
+     }
+   }
+
 
     stage('Deploy to k3s') {
       steps {
