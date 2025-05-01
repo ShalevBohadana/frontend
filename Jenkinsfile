@@ -1,10 +1,23 @@
 pipeline {
   agent any
 
+  // 1) don’t do the implicit checkout before stages
+  options {
+    skipDefaultCheckout()
+  }
+
+  environment {
+    // put your real IDs here
+    REGISTRY        = "docker.io/shalev223"
+    IMAGE_NAME      = "frontend"
+    DOCKER_CREDS    = "dockerhub-credentials-id"
+    KUBECONFIG_ID   = "kubeconfig-creds-id"
+  }
+
   stages {
     stage('Clean workspace') {
       steps {
-        cleanWs()    // requires the Pipeline Utility Steps plugin
+        cleanWs()    // from Pipeline Utility Steps
       }
     }
 
@@ -14,11 +27,11 @@ pipeline {
       }
     }
 
- stage('Build & Test React') {
+    stage('Build & Test React') {
       agent {
         docker {
           image 'node:18-alpine'
-          args  '-u root:root'          // so generated files are owned by jenkins
+          args  '-u root:root'    // run as root inside the container
         }
       }
       steps {
@@ -28,12 +41,13 @@ pipeline {
     }
 
     stage('Build & Push Docker Image') {
-      agent { label 'docker' }   // ensure this runs on a node with Docker daemon access
+      // this needs to run on a node that has Docker daemon access
+      agent { label 'docker' }
       steps {
         script {
-          docker.withRegistry('', env.DOCKER_CREDS) {
-            // root of workspace has your Dockerfile now
-            def img = docker.build("${REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER")
+          docker.withRegistry('', DOCKER_CREDS) {
+            // assumes your Dockerfile lives in the workspace root
+            def img = docker.build("${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}")
             img.push()
           }
         }
@@ -42,11 +56,11 @@ pipeline {
 
     stage('Deploy to K8s') {
       steps {
-        withCredentials([file(credentialsId: env.KUBECONFIG_ID, variable: 'KUBECONFIG')]) {
+        withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KUBECONFIG')]) {
           sh '''
             export KUBECONFIG=$KUBECONFIG
             kubectl set image deployment/frontend \
-              frontend=${REGISTRY}/${IMAGE_NAME}:$BUILD_NUMBER
+              frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
           '''
         }
       }
@@ -59,4 +73,3 @@ pipeline {
     failure { echo "❌ Build or deploy failed — check the logs above." }
   }
 }
-
