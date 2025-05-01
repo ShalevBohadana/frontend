@@ -1,19 +1,20 @@
 pipeline {
   agent any
 
-  environment {
-    REGISTRY      = "docker.io/shalev223"
-    IMAGE_NAME    = "frontend"
-    DOCKER_CREDS  = "dockerhub-credentials-id"
-    KUBECONFIG_ID = "kubeconfig-creds-id"
-  }
-
   stages {
-    stage('Checkout') {
-      steps { checkout scm }
+    stage('Clean workspace') {
+      steps {
+        cleanWs()    // requires the Pipeline Utility Steps plugin
+      }
     }
 
-    stage('Build & Test React') {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+ stage('Build & Test React') {
       agent {
         docker {
           image 'node:18-alpine'
@@ -58,3 +59,4 @@ pipeline {
     failure { echo "❌ Build or deploy failed — check the logs above." }
   }
 }
+
