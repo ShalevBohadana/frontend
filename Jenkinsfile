@@ -30,17 +30,16 @@ pipeline {
         }
       }
     }
-
-    stage('Build & Push Docker Image') {
-      steps {
-        script {
-          docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
-            def img = docker.build("${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}", 'frontend/')
-            img.push()
-          }
-        }
+stage('Build & Push Docker Image') {
+  steps {
+    script {
+      docker.withRegistry('', 'dockerhub-credentials-id') {
+        def img = docker.build("${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}", 'frontend/')
+        img.push()
       }
     }
+  }
+}
 
     stage('Deploy to k3s') {
       steps {
