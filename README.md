@@ -1,49 +1,104 @@
-# Portfolio Template
 
-I created this portfolio to use as my own but ended up doing something else entirely. However, instead of keeping it buried, I decided to put it up here on GitHub as an open-source resource to help individuals to learn, adapt, and create their own portfolios. Feel free to customize and modify the theme and components to suit your personal style and branding preferences.
+# 🧑‍💻 Shalev Bohadana – Frontend Portfolio Template
 
-## License and Attribution
+This is a customizable portfolio template built with modern web technologies, including **React.js**, **Tailwind CSS**, **Three.js**, and **Framer Motion**. Originally created for personal use, it's now open-sourced to assist others in crafting their own portfolios.
 
-## Built With
+## 🚀 Live Demo
 
-- React.js
-- TailwindCSS
-- Three.js
-- Framer Motion
+Experience the live version here: [Live Demo](#)
 
-## Live Demo
+## 🛠️ Built With
 
-- Click [here](/) to view the live demo.
+- **React.js**
+- **Tailwind CSS**
+- **Three.js**
+- **Framer Motion**
 
-## Getting Started
-
-To get started with this portfolio template, follow these simple steps:
+## 📦 Getting Started
 
 ### Prerequisites
 
-Make sure you have node `16.0.0` or higher and npm `9.0.0` or higher installed.
+- **Node.js** (v14 or higher)
+- **npm** or **pnpm**
 
+### Installation
 
-# Usage
+1. **Clone the repository:**
 
-- Run the following command to start a local server:
-
+```bash
+git clone https://github.com/ShalevBohadana/frontend.git
+cd frontend
 ```
+
+2. **Install dependencies:**
+
+Using npm:
+
+```bash
+npm install
+```
+
+Or using pnpm:
+
+```bash
+pnpm install
+```
+
+3. **Start the development server:**
+
+Using npm:
+
+```bash
 npm run dev
 ```
 
-This will open up the project on a browser on `http://localhost:5173/`
+Or using pnpm:
 
-## Build
-
-- To create a production build:
-
-```
-npm run build
+```bash
+pnpm dev
 ```
 
-- To preview the site as it will appear once deployed:
+The application will be available at `http://localhost:3000`.
+
+## ⚙️ Deployment
+
+### Docker
+
+```bash
+docker build -t portfolio .
+docker run -p 3000:3000 portfolio
+```
+
+### Jenkins
+
+Configure your Jenkins pipeline to automate builds and deployments.
+
+## 📁 Project Structure
 
 ```
-npm run preview
+frontend/
+├── public/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── assets/
+├── .dockerignore
+├── .gitignore
+├── Dockerfile
+├── Jenkinsfile
+├── package.json
+├── tailwind.config.cjs
+└── vite.config.js
 ```
+
+## 🧪 Testing
+
+Currently, there are no automated tests configured. Contributions for adding testing frameworks like Jest or React Testing Library are welcome.
+
+## 🤝 Contributing
+
+Contributions are welcome via forks and pull requests.
+
+## 📄 License
+
+MIT License.
