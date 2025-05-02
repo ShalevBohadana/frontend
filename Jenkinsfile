@@ -50,15 +50,15 @@ pipeline {
       }
     }
 
-    stage('Deploy to K8s') {
-      steps {
-        sh '''
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          kubectl set image deployment/frontend \
-            frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
-        '''
-      }
-    }
+stage('Deploy to K8s') {
+  steps {
+    sh '''
+      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      kubectl set image deployment/frontend frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+    '''
+  }
+}
+
 
   } 
 
