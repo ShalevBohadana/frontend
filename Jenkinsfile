@@ -1,13 +1,11 @@
 pipeline {
   agent any
 
-  // 1) don’t do the implicit checkout before stages
   options {
     skipDefaultCheckout()
   }
 
   environment {
-    // put your real IDs here
     REGISTRY        = "docker.io/shalev223"
     IMAGE_NAME      = "frontend"
     DOCKER_CREDS    = "dockerhub-credentials-id"
@@ -17,7 +15,7 @@ pipeline {
   stages {
     stage('Clean workspace') {
       steps {
-        cleanWs()    // from Pipeline Utility Steps
+        cleanWs()
       }
     }
 
@@ -31,7 +29,7 @@ pipeline {
       agent {
         docker {
           image 'node:18-alpine'
-          args  '-u root:root'    // run as root inside the container
+          args  '-u root:root'
         }
       }
       steps {
@@ -41,12 +39,10 @@ pipeline {
     }
 
     stage('Build & Push Docker Image') {
-      // this needs to run on a node that has Docker daemon access
       agent { label 'docker' }
       steps {
         script {
           docker.withRegistry('', DOCKER_CREDS) {
-            // assumes your Dockerfile lives in the workspace root
             def img = docker.build("${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}")
             img.push()
           }
@@ -54,15 +50,17 @@ pipeline {
       }
     }
 
-stage('Deploy to K8s') {
-  steps {
-    sh '''
-      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-      kubectl set image deployment/frontend \
-        frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
-    '''
-  }
-}
+    stage('Deploy to K8s') {
+      steps {
+        sh '''
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          kubectl set image deployment/frontend \
+            frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+        '''
+      }
+    }
+
+  } 
 
   post {
     always  { junit allowEmptyResults: true, testResults: '**/test-results/*.xml' }
