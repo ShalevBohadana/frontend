@@ -54,18 +54,15 @@ pipeline {
       }
     }
 
-    stage('Deploy to K8s') {
-      steps {
-        withCredentials([file(credentialsId: KUBECONFIG_ID, variable: 'KUBECONFIG')]) {
-          sh '''
-            export KUBECONFIG=$KUBECONFIG
-            kubectl set image deployment/frontend \
-              frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
-          '''
-        }
-      }
-    }
+stage('Deploy to K8s') {
+  steps {
+    sh '''
+      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      kubectl set image deployment/frontend \
+        frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+    '''
   }
+}
 
   post {
     always  { junit allowEmptyResults: true, testResults: '**/test-results/*.xml' }
