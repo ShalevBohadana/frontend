@@ -1,6 +1,6 @@
 # 1) Builder → produce static assets
 FROM node:18-alpine AS builder
-WORKDIR /app
+WORKDIR /frontend
 
 COPY package*.json ./
 RUN npm ci
