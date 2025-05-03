@@ -58,23 +58,20 @@ pipeline {
     }
 
     stage('Deploy to K8s') {
-      // Kubectl needs the kubeconfig file we uploaded as a Secret File
-      steps {
-        withCredentials([file(credentialsId: env.KUBECONFIG_ID, variable: 'KUBECONFIG')]) {
-          sh '''
-            # use the injected KUBECONFIG
-            export KUBECONFIG=$KUBECONFIG
+  steps {
+    withCredentials([file(credentialsId: env.KUBECONFIG_ID, variable: 'KUBECONFIG')]) {
+      sh '''
+        # now KUBECONFIG is your k3s-full.yaml
+        kubectl set image deployment/frontend \
+          frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
 
-            # update the image and record the change
-            kubectl set image deployment/frontend \
-              frontend=${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} --record
-
-            # wait for rollout to finish
-            kubectl rollout status deployment/frontend
-          '''
-        }
-      }
+        # wait for it to roll out
+        kubectl rollout status deployment/frontend
+      '''
     }
+  }
+}
+
   }
 
   post {
