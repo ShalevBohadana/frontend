@@ -20,6 +20,14 @@ pipeline {
         sh 'npm run build'
       }
     }
+stage('Checkout Infra Manifests') {
+  steps {
+    // pull down the infra repo alongside your frontend code
+    dir('infra') {
+      git url: 'https://github.com/ShalevBohadana/infra.git', credentialsId: 'your‑git‑creds'
+    }
+  }
+}
 
     stage('Build & Push Docker Image') {
       agent { label 'docker' }
